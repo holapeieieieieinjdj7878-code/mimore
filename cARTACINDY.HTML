@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Carta Romántica PRO</title>
+<style>
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #fce4ec, #f8bbd0, #f48fb1);
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  animation: cambioColor 10s infinite alternate;
+}
+
+@keyframes cambioColor {
+  0% { background: #fce4ec; }
+  50% { background: #f8bbd0; }
+  100% { background: #f48fb1; }
+}
+
+.sobre {
+  position: relative;
+  width: 90%;
+  max-width: 800px;
+  aspect-ratio: 6 / 5;
+  cursor: pointer;
+}
+
+.fondo {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: white;
+  border: 2px solid #e91e63;
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+.solapa {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #f7f7f7;
+  clip-path: polygon(0 0, 100% 0, 50% 60%);
+  transform-origin: top;
+  transition: transform 0.8s ease;
+  z-index: 3;
+}
+
+.corazon {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: red;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  z-index: 4;
+  animation: latido 1s infinite;
+}
+.corazon::before, .corazon::after {
+  content: "";
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: red;
+  border-radius: 50%;
+}
+.corazon::before { top: -40px; } 
+.corazon::after { left: 40px; }
+
+@keyframes latido {
+  0%,100% { transform: translate(-50%, -50%) rotate(-45deg) scale(1); }
+  50% { transform: translate(-50%, -50%) rotate(-45deg) scale(1.1); }
+}
+
+.papel {
+  position: absolute;
+  width: 95%;
+  height: 95%;
+  background: #fff;
+  border-radius: 10px;
+  border: 2px solid #e91e63;
+  left: 2.5%;
+  top: 2.5%;
+  padding: 20px;
+  box-sizing: border-box;
+  transition: transform 0.8s ease, opacity 0.8s ease;
+  z-index: 2;
+  box-shadow: 0 0 20px rgba(233,30,99,0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: visible; /* <--- CAMBIO */
+  transform: scaleY(0);
+  opacity: 0;
+}
+
+.sobre.abierto .papel {
+  transform: scaleY(1);
+  opacity: 1;
+}
+
+.contenido-carta {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative; /* <--- PARA QUE EL BOTÓN ESTE ARRIBA */
+}
+
+#texto {
+  color: #e91e63;
+  text-shadow: 0 0 5px #ff80ab, 0 0 10px #ff4081;
+  margin-bottom: 15px;
+  min-height: 50px;
+}
+
+#foto {
+  width: 350px;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #e91e63;
+  margin-top: 10px;
+}
+
+/* BOTÓN AJUSTADO */
+.btn-musica {
+  margin-top: 15px;
+  padding: 12px 25px;
+  background: #e91e63;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(233,30,99,0.6);
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 10; /* <--- BOTÓN ENCIMA */
+}
+
+.btn-musica:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px rgba(233,30,99,1);
+}
+
+.sobre.abierto .solapa { transform: rotateX(-180deg); }
+.sobre.abierto .corazon { opacity: 0; animation: none; }
+
+.corazon-float { 
+  position: absolute; 
+  pointer-events: none; 
+  font-weight: bold; 
+  white-space: nowrap; 
+  color: red; 
+}
+</style>
+</head>
+
+<body>
+
+<div class="sobre" onclick="abrirCarta()">
+  <div class="fondo">
+    <div class="papel">
+      <div class="contenido-carta">
+        <h2>💌 MI AMOL Y SU AMOL jiji</h2>
+        <p id="texto"></p>
+        <img id="foto" src="cindy.jpeg" alt="Mi foto">
+
+        <!-- BOTÓN DE MÚSICA DEBAJO DE LA FOTO -->
+        <button onclick="abrirCancion(event)" class="btn-musica">
+          💖 toca aquí pero solo si me amas 😏
+        </button>
+
+      </div>
+    </div>
+  </div>
+  <div class="solapa"></div>
+  <div class="corazon"></div>
+</div>
+
+<audio id="sonido" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+
+<script>
+let abierto = false;
+
+function abrirCarta() {
+  const sobre = document.querySelector(".sobre");
+  sobre.classList.toggle("abierto");
+
+  if (!abierto) {
+    document.getElementById("sonido").play();
+    escribirTexto();
+    generarCorazonesContinuos();
+    abierto = true;
+  }
+}
+
+// Evita que el click del botón cierre la carta
+function abrirCancion(event) {
+  event.stopPropagation();
+  window.open("https://youtu.be/L4RPMSW0Gvc?si=_q7L7btcxtPrqtuL", "_blank");
+}
+
+function escribirTexto() {
+  const mensaje = "Desde que llegaste a mi vida todo cambió bien bonito… y no tienes idea de lo feliz que haces a este negro 😌 y prepárate porque cada día que estés conmigo te lo voy a demostrar mi amol bello… muuuuuuuuuuuuuuuak ❤️";
+  let i = 0;
+  const velocidad = 50;
+  const contenedor = document.getElementById("texto");
+  contenedor.innerHTML = "";
+
+  const intervalo = setInterval(() => {
+    contenedor.innerHTML += mensaje[i];
+    i++;
+    if (i >= mensaje.length) clearInterval(intervalo);
+  }, velocidad);
+}
+
+function generarCorazonesContinuos() {
+  const palabras = [
+    "❤️","💖","Te amo","mi niña","❤️","Te quiero","😘","mi chaparrita",
+    " mi vida","💕","😘","Mi corazón","Amor","❤️","Siempre tuyo","😘","Para ti","❤️",
+    "Mi vida","❤️","Eres todo","mi loquita","mi negra ❤️","mi cachetona","me tenes maalll","te adoro",
+  ];
+  
+  const screenHeight = window.innerHeight;
+  const screenWidth = window.innerWidth;
+
+  setInterval(() => {
+    const elemento = document.createElement("div");
+    elemento.className = "corazon-float";
+    const texto = palabras[Math.floor(Math.random() * palabras.length)];
+    elemento.innerHTML = texto;
+
+    elemento.style.left = Math.random() * screenWidth + "px";
+    elemento.style.top = screenHeight + "px";
+    elemento.style.fontSize = (14 + Math.random() * 40) + "px";
+
+    const duracion = screenWidth < 600 ? 3 + Math.random() * 2 : 4 + Math.random() * 4;
+    elemento.style.transition = `transform ${duracion}s linear, opacity ${duracion}s linear`;
+
+    document.body.appendChild(elemento);
+    const alturaFinal = screenWidth < 600 ? -screenHeight * 1.8 : -screenHeight * 1.2;
+
+    setTimeout(() => {
+      elemento.style.transform = `translateY(${alturaFinal}px)`;
+      elemento.style.opacity = 0;
+    }, 50);
+
+    setTimeout(() => elemento.remove(), duracion * 1000 + 100);
+  }, 200);
+}
+</script>
+
+</body>
+</html>
